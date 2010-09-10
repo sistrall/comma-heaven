@@ -1,6 +1,75 @@
-= comma-heaven
+= CommaHeaven
 
-Description goes here.
+CommaHeaven aims to be to CSV export what Searchlogic is to search.
+
+== Advice!
+
+While in production on some project, CommaHeaven is young. Feature additions or bug fixes are welcome.
+
+== Install & use
+
+Install the gem:
+
+  sudo gem install comma-heaven
+  
+Now just set it as a dependency in your project and you are ready to go.
+
+== Export with comma-heaven
+
+Let me show how CommaHeaven works using an example. We have the following ActiveRecord models:
+
+  # Tree(id: integer, name: string, age: integer, gardener_id: integer)
+  # Leaf(id: integer, tree_id: integer, position: string, size: float, height_from_ground: float)
+  
+  class Tree < ActiveRecord::Base
+    has_many :leafs, :dependent => :destroy
+  end
+  
+  class Leaf < ActiveRecord::Base
+    belongs_to :tree
+  end
+
+Tables contain:
+  
+  # Trees:
+  +----+-------+-----+-------------+
+  | id | name  | age | gardener_id |
+  +----+-------+-----+-------------+
+  | 37 | Olmo  | 100 | 33          |
+  | 38 | Ulivo | 150 | 34          |
+  +----+-------+-----+-------------+
+  
+  # Leaves:
+  +----+---------+----------+------+--------------------+
+  | id | tree_id | position | size | height_from_ground |
+  +----+---------+----------+------+--------------------+
+  | 81 | 37      | top      |      |                    |
+  | 82 | 37      | middle   |      |                    |
+  | 83 | 37      | bottom   |      |                    |
+  | 84 | 38      | 0        |      | 1.0                |
+  | 85 | 38      | 5        |      | 2.0                |
+  +----+---------+----------+------+--------------------+
+  
+CommaHeaven let you export CSV using:
+
+  Tree.to_comma_heaven(:export => { "name" => {"1" => {"as" => "", "include" => "1"} }, 
+                                    "leafs" => {"2" => {"export" => { "position" => {"3" => {"as" => "", "include" => '1'} },
+                                                                      "height_from_ground" => {"4" => {'as' => '', :include => '1'} } }, 'limit' => 2 } } }).to_csv
+  
+What you obtain is:
+
+  tree_name,leaf_0_position,leaf_0_height_from_ground,leaf_1_position,leaf_1_height_from_ground
+  Olmo,top,,middle,
+  Ulivo,0,1.0,5,2.0
+  
+The export hash explains what to export and how.
+
+== Opinions
+
+* CSV export is a common request and still hard to do
+* Export parameters can be passed through an HTML form
+* Use joins to produce the dataset to export
+* Relationships are exported by row (see example above)
 
 == Note on Patches/Pull Requests
  
@@ -9,9 +78,10 @@ Description goes here.
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
 * Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
+  (if you want to have your own version, that is fine but
+   bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
 == Copyright
 
-Copyright (c) 2010 Silvano Stralla. See LICENSE for details.
+Copyright (c) 2009-2010 Silvano Stralla. See LICENSE for details.
