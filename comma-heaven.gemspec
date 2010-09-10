@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Silvano Stralla"]
   s.date = %q{2010-09-10}
-  s.description = %q{CommaHeaven permits easy exports of Rails models to CSV}
+  s.description = %q{TODO: longer description of your gem}
   s.email = %q{silvano.stralla@sistrall.it}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{CSV exporter for Rails}
+  s.summary = %q{TODO: one-line summary of your gem}
   s.test_files = [
     "spec/active_record/to_comma_heaven_spec.rb",
      "spec/export_spec.rb",
@@ -58,18 +58,18 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_development_dependency(%q<rspec>, [">= 0"])
+      s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_runtime_dependency(%q<activerecord>, [">= 0"])
       s.add_runtime_dependency(%q<actionpack>, [">= 0"])
       s.add_runtime_dependency(%q<fastercsv>, [">= 0"])
     else
-      s.add_dependency(%q<rspec>, [">= 0"])
+      s.add_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_dependency(%q<activerecord>, [">= 0"])
       s.add_dependency(%q<actionpack>, [">= 0"])
       s.add_dependency(%q<fastercsv>, [">= 0"])
     end
   else
-    s.add_dependency(%q<rspec>, [">= 0"])
+    s.add_dependency(%q<rspec>, [">= 1.2.9"])
     s.add_dependency(%q<activerecord>, [">= 0"])
     s.add_dependency(%q<actionpack>, [">= 0"])
     s.add_dependency(%q<fastercsv>, [">= 0"])
