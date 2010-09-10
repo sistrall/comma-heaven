@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "comma-heaven"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{CSV exporter for Rails}
+    gem.description = %Q{CommaHeaven permits easy exports of Rails models to CSV}
     gem.email = "silvano.stralla@sistrall.it"
     gem.homepage = "http://github.com/sistrall/comma-heaven"
     gem.authors = ["Silvano Stralla"]
