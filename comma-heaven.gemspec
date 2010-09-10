@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Silvano Stralla"]
   s.date = %q{2010-09-10}
-  s.description = %q{TODO: longer description of your gem}
+  s.description = %q{CommaHeaven permits easy exports of Rails models to CSV}
   s.email = %q{silvano.stralla@sistrall.it}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -41,7 +41,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{TODO: one-line summary of your gem}
+  s.summary = %q{CSV exporter for Rails}
   s.test_files = [
     "spec/active_record/to_comma_heaven_spec.rb",
      "spec/export_spec.rb",
