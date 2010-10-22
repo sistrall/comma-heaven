@@ -32,7 +32,12 @@ module CommaHeaven
       end
       
       def table_alias(method = :pluralize)
-        return [((parent && parent.parent) ? parent.table_alias(method) : nil), table.send(method), index].compact.join('_')
+        case method
+        when :pluralize
+          return [((parent && parent.parent) ? parent.table_alias(method) : nil), table, index].compact.join('_')
+        when :singularize
+          return [((parent && parent.parent) ? parent.table_alias(method) : nil), model.name.underscore, index].compact.join('_')
+        end
       end
       
       protected
