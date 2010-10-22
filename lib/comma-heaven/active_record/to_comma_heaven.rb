@@ -15,7 +15,7 @@ module CommaHeaven
         options.symbolize_keys!
         options[:limit] = options[:limit].to_i if options[:limit].kind_of?(String)
         
-        returning FasterCSV::Table.new([]) do |table|
+        FasterCSV::Table.new([]).tap do |table|
           columns = CommaHeaven::Sqler::Columns.new(self, options[:export])
           headers = columns.sql_as
           
