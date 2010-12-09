@@ -182,4 +182,14 @@ Olmo,100,top,middle
 Ulivo,150,0,5
 EOS
   end
+  
+  it "should export to CSV avoiding new lines in the fields" do
+    Tree.create(:name => "Ulivo\nGrande")
+    Tree.to_comma_heaven(:export => {:name => {0 => {}}, :age => {1 => {}}}, :converter => lambda { |v| v.to_s.gsub(/\n/, ' ') }).to_csv().should == <<-EOS
+tree_name,tree_age
+Olmo,100
+Ulivo,150
+Ulivo Grande,""
+EOS
+  end
 end

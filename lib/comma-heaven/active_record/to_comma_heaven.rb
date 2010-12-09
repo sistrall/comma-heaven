@@ -14,6 +14,7 @@ module CommaHeaven
       def to_comma_heaven(options = {})
         options.symbolize_keys!
         options[:limit] = options[:limit].to_i if options[:limit].kind_of?(String)
+        options[:converter] ||= lambda { |v| v }
         
         FasterCSV::Table.new([]).tap do |table|
           columns = CommaHeaven::Sqler::Columns.new(self, options[:export])
@@ -21,7 +22,7 @@ module CommaHeaven
           
           find(:all, :limit => options[:limit], :joins => columns.joins, :select => columns.select).each do |resource|
             fields = columns.sql_as.inject([]) do |a, f|
-              a << resource.send(f)
+              a << options[:converter].call(resource.send(f))
             end
             
             table << FasterCSV::Row.new(headers, fields)
