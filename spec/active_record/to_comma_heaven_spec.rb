@@ -2,8 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe "CommaHeaven" do
   before(:each) do
-    alice = Gardener.create(:name => 'Alice')
-    bob   = Gardener.create(:name => 'Bob')
+    alice = Gardener.create(:name => 'Alice', :birthdate => 6.years.ago)
+    bob   = Gardener.create(:name => 'Bob', :birthdate => 8.years.ago)
     
     olmo = Tree.create(:name => 'Olmo', :age => 100, :gardener => alice)
     olmo.leafs.create(:position => 'top')
@@ -192,4 +192,13 @@ Ulivo,150
 Ulivo Grande,""
 EOS
   end
+
+  it "should allow custom formats on dates and times" do
+    Tree.to_comma_heaven(:format => {:datetime => '%d/%m/%Y %H:%M'}, :export => {:name => {0 => {}}, :gardener => {1 => {:export => {:name => {1 => {}}, :surname => {2 => {}}, :birthdate => {3 => {}}}}}}).to_csv.should == <<-EOS
+tree_name,gardener_name,gardener_surname,gardener_birthdate
+Olmo,Alice,,#{Gardener.find_by_name('Alice').birthdate.strftime('%d/%m/%Y %H:%M')}
+Ulivo,Bob,,#{Gardener.find_by_name('Bob').birthdate.strftime('%d/%m/%Y %H:%M')}
+EOS
+  end
+
 end

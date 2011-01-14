@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(:version => 1) do
   create_table :gardeners do |t|
     t.string :name
     t.string :surname
+    t.datetime :birthdate
   end
   
   create_table :gardener_clones do |t|
