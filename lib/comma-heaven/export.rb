@@ -6,7 +6,7 @@ module CommaHeaven
       end
     end
     
-    attr_accessor :klass, :current_scope, :options, :export, :limit
+    attr_accessor :klass, :current_scope, :options, :export, :limit, :by
     undef :id if respond_to?(:id)
   
     def initialize(klass, current_scope, options = {})
