@@ -7,18 +7,18 @@ module CommaHeaven
         @model    = model
         @export   = export
         @options  = options
-      
+        
         # Fill the array
         fill!
-      
+        
         # Sort by position
         # sort! { |a, b| a.position <=> b.position }
       end
-    
+        
       def select
         map(&:select).reject { |e| e.empty? }.join(', ')
       end
-    
+      
       def joins
         map(&:joins).compact.uniq.join(" ").gsub(/\n/, '').squeeze(' ')
       end
@@ -57,7 +57,6 @@ module CommaHeaven
           opts = opts.merge(:on     => self.options[:on])
           
           export = opts.delete(:export)
-          
           case
           when @model.column_names.include?(column_or_association.to_s)
             as = opts[:as]
@@ -80,7 +79,7 @@ module CommaHeaven
             
             unless opts[:include] == '0'
               association = @model.reflect_on_association(column_or_association.to_sym)
-              if association && association.macro == :has_many
+              if association && association.macro == :has_many && opts[:by] != 'row'
 
                 limit = case opts[:limit]
                   when "" then 1

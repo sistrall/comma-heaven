@@ -64,6 +64,21 @@ What you obtain is:
   
 The export hash explains what to export and how.
 
+The @:by => 'row'@ option gives the ability to denormalize table contents by rows. Using:
+
+  Tree.to_comma_heaven(:export => { "name" => {"1" => {"as" => "", "include" => "1"} }, 
+                                    "leafs" => {"2" => {"export" => { "position" => {"3" => {"as" => "", "include" => '1'} },
+                                                                      "height_from_ground" => {"4" => {'as' => '', :include => '1'} } }, 'by' => 'row' } } }).to_csv
+
+You obtain:
+
+  tree_name,leaf_position,leaf_height_from_ground
+  Olmo,top,,
+  Olmo,middle,,
+  Olmo,bottom,,
+  Ulivo,0,1.0
+  Ulivo,5,2.0
+
 == Opinions
 
 * CSV export is a common request and still hard to do

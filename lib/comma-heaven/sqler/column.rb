@@ -10,11 +10,18 @@ module CommaHeaven
       def joins
         case parent
         when HasManyColumns
-          <<-EOS
-          LEFT JOIN #{quote(table)} AS #{table_alias}
-            ON #{parent.parent.table_alias}.#{model.primary_key} = #{table_alias}.#{association.primary_key_name}
-            AND #{table_alias}.#{association.klass.primary_key} = (SELECT #{association.klass.primary_key} FROM #{association.quoted_table_name} WHERE #{association.primary_key_name} = #{parent.parent.table_alias}.#{model.primary_key} LIMIT #{index}, 1)
-          EOS
+          if parent.options[:by] == 'row'
+            <<-EOS
+            LEFT JOIN #{quote(table)} AS #{table_alias}
+              ON #{parent.parent.table_alias}.#{model.primary_key} = #{table_alias}.#{association.primary_key_name}
+            EOS
+          else
+            <<-EOS
+            LEFT JOIN #{quote(table)} AS #{table_alias}
+              ON #{parent.parent.table_alias}.#{model.primary_key} = #{table_alias}.#{association.primary_key_name}
+              AND #{table_alias}.#{association.klass.primary_key} = (SELECT #{association.klass.primary_key} FROM #{association.quoted_table_name} WHERE #{association.primary_key_name} = #{parent.parent.table_alias}.#{model.primary_key} LIMIT #{index}, 1)
+            EOS
+          end
         when BelongsToColumns
           <<-EOS
           LEFT JOIN #{quote(table)} AS #{table_alias}

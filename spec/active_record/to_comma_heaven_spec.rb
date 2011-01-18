@@ -200,5 +200,35 @@ Olmo,Alice,,#{Gardener.find_by_name('Alice').birthdate.strftime('%d/%m/%Y %H:%M'
 Ulivo,Bob,,#{Gardener.find_by_name('Bob').birthdate.strftime('%d/%m/%Y %H:%M')}
 EOS
   end
+  
+  it "should allow denormalized export (also called 'by row')" do
+    Tree.to_comma_heaven(:export => {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '0', :as => ''}}, :leafs => {2 => {:export => {:position => {4 => {:include => '1', :as => ''}}}, :by => 'row', :limit => 3}}}).to_csv.should == <<-EOS
+tree_name,leaf_position
+Olmo,top
+Olmo,middle
+Olmo,bottom
+Ulivo,0
+Ulivo,5
+EOS
+  end
 
+  it "should allow denormalized export (also called 'by row')" do
+    Tree.to_comma_heaven(:export => {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '0', :as => ''}}, :leafs => {2 => {:export => {:position => {4 => {:include => '1', :as => ''}}}, :by => 'row', :limit => 3}}}).to_csv.should == <<-EOS
+tree_name,leaf_position
+Olmo,top
+Olmo,middle
+Olmo,bottom
+Ulivo,0
+Ulivo,5
+EOS
+
+    Tree.to_comma_heaven(:export => {:name => {0 => {}}, :gardener => {1 => {:export => {:name => {2 => {}}, :surname => {3 => {}}}}}, :leafs => {4 => {:export => {:position => {5 => {}}}, :by => 'row', :limit => 2}}}).to_csv.should == <<-EOS
+tree_name,gardener_name,gardener_surname,leaf_position
+Olmo,Alice,,top
+Olmo,Alice,,middle
+Olmo,Alice,,bottom
+Ulivo,Bob,,0
+Ulivo,Bob,,5
+EOS
+  end
 end
