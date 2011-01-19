@@ -25,7 +25,7 @@ module CommaHeaven
               value = resource.send(field)
               
               if options[:format]
-                value = value.to_time.strftime(options[:format][:datetime]) if value =~ %r{(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)} && options[:format][:datetime]
+                value = value.to_time.strftime(options[:format][:datetime]) if value =~ %r{(\d+)-(\d+)-(\d+)} && options[:format][:datetime]
               end
               
               acc << options[:converter].call(value)
