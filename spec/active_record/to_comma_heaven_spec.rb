@@ -231,4 +231,17 @@ Ulivo,Bob,,0
 Ulivo,Bob,,5
 EOS
   end
+  
+  
+  it "shouldn't raise errors with text fields containing dates" do
+    pero = Tree.create(:name => 'Pero (marzo 2011)', :age => 10)
+
+    Tree.to_comma_heaven(:format => {:datetime => '%d/%m/%Y %H:%M'}, :export => {:name => {0 => {}}, :age => {1 => {}}, :leafs => {2 => {:export => {:position => {4 => {}}}, :limit => ''}}}).to_csv.should == <<-EOS
+tree_name,tree_age,leaf_0_position
+Olmo,100,top
+Ulivo,150,0
+Pero (marzo 2011),10,
+EOS
+  end
+
 end
