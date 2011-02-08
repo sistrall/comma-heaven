@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake'
+gem 'rspec', '1.3.1'
 
 begin
   require 'jeweler'
@@ -13,7 +14,7 @@ begin
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_dependency "activerecord"
     gem.add_dependency "actionpack"
-    gem.add_dependency "fastercsv"
+    gem.add_dependency "fastercsv" unless RUBY_VERSION > "1.9"
     gem.files = FileList['lib/**/*.rb', 'spec/**/*'].to_a
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
