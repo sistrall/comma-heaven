@@ -8,20 +8,20 @@ describe "HasManyColumns" do
   
   it "should build correct SQL select clause" do
     column = CommaHeaven::Sqler::HasManyColumns.new(@association, {:position => {4 => {:include => '1', :as => ''}}}, 1, @tree, 1, :limit => '3')
-    column.select.should == 'leafs_1.position AS "leaf_1_position"'
+    column.select.should == '_leafs_1.position AS "leaf_1_position"'
   end
 
   it "should build correct SQL select clause for multiple fields" do
     column = CommaHeaven::Sqler::HasManyColumns.new(@association, {:position => {4 => {:include => '1', :as => ''}}, :size => {5 => {:include => '1', :as => ''}}}, 1, @tree, 1, :limit => '3')
-    column.select.should == 'leafs_1.position AS "leaf_1_position", leafs_1.size AS "leaf_1_size"'
+    column.select.should == '_leafs_1.position AS "leaf_1_position", _leafs_1.size AS "leaf_1_size"'
   end
   
   it "should build correct SQL joins clause" do
     column = CommaHeaven::Sqler::HasManyColumns.new(@association, {:position => {4 => {:include => '1', :as => ''}}}, 1, @tree, 1, :limit => '3')
     column.joins.should == <<-EOS.gsub(/\n/, ' ').squeeze(' ').strip
-LEFT JOIN "leafs" AS leafs_1
-  ON trees.id = leafs_1.tree_id
-  AND leafs_1.id = (SELECT id FROM "leafs" WHERE tree_id = trees.id LIMIT 1, 1)
+LEFT JOIN "leafs" AS _leafs_1
+  ON trees.id = _leafs_1.tree_id
+  AND _leafs_1.id = (SELECT id FROM "leafs" WHERE tree_id = trees.id LIMIT 1, 1)
 EOS
   end
 end

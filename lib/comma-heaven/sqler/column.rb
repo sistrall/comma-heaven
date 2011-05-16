@@ -38,7 +38,7 @@ module CommaHeaven
       
       def sql_as
         return as % index if as
-        return [table_alias(:singularize), attribute].compact.join('_')
+        return [table_alias(:singularize).gsub(/^_+/, ''), attribute].compact.join('_')
       end
 
       protected
