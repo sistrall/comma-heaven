@@ -71,6 +71,7 @@ Spec::Runner.configure do |config|
     class Tree < ActiveRecord::Base
       belongs_to :gardener
       has_many :leafs, :dependent => :destroy
+      has_many :matching_o_leafs, :class_name => 'Leaf', :conditions => ['position LIKE ?', '%o%']
       
       named_scope :that_begins_with_o, {:conditions => ['name LIKE ?', 'o%']}
     end

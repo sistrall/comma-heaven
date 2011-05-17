@@ -192,4 +192,24 @@ describe "Columns" do
     Gardener.scoped(:joins => columns.joins).count.should == 2
     Gardener.scoped(:joins => columns.joins, :select => columns.select).first.attributes.to_a.length.should == 16
   end
+  
+  it "should allow export of multiple relationships referring to same table" do
+    export = {
+      :name => {0 => {:include => '1', :as => ''}}, 
+      :age => {1 => {:include => '0', :as => ''}}, 
+      :leafs            => {2 => {:export => {
+        :position => {3 => {:include => '1', :as => ''}}}, :limit => 3}}, 
+      :matching_o_leafs => {4 => {:export => {
+        :position => {5 => {:include => '1', :as => ''}}}, :limit => 3}}}
+    
+    columns = CommaHeaven::Sqler::Columns.new(Tree, export)
+    
+    columns.joins.should  =~ /_leafs_0/
+    columns.joins.should  =~ /_leafs_1/
+    columns.joins.should  =~ /_leafs_2/
+
+    columns.joins.should  =~ /_matching_o_leafs_0/
+    columns.joins.should  =~ /_matching_o_leafs_1/
+    columns.joins.should  =~ /_matching_o_leafs_2/
+  end
 end

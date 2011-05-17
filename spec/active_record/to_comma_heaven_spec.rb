@@ -243,5 +243,20 @@ Ulivo,150,0
 Pero (marzo 2011),10,
 EOS
   end
-
+  
+  it "should allow export of multiple relationships referring to same table" do
+    export = {
+      :name => {0 => {:include => '1', :as => ''}}, 
+      :age => {1 => {:include => '0', :as => ''}}, 
+      :leafs            => {2 => {:export => {
+        :position => {3 => {:include => '1', :as => ''}}}, :limit => 3}}, 
+      :matching_o_leafs => {4 => {:export => {
+        :position => {5 => {:include => '1', :as => ''}}}, :limit => 3}}}
+    
+    Tree.to_comma_heaven(:export => export).to_csv.should == <<-EOS
+tree_name,leaf_0_position,leaf_1_position,leaf_2_position,matching_o_leaf_0_position,matching_o_leaf_1_position,matching_o_leaf_2_position
+Olmo,top,middle,bottom,top,,bottom
+Ulivo,0,5,,,,
+EOS
+  end
 end

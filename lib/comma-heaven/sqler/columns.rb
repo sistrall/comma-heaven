@@ -32,12 +32,12 @@ module CommaHeaven
       end
       
       def table_alias(method = :pluralize)
-        return prefix + case method
-        when :pluralize then
-          [((parent && parent.parent) ? parent.table_alias(method) : nil), table, index].compact.join('_')
-        when :singularize then
-          [((parent && parent.parent) ? parent.table_alias(method) : nil), model.name.underscore, index].compact.join('_')
-        end
+        t = case self
+          when HasManyColumns, BelongsToColumns, HasOneColumns then association.name.to_s.send(method)
+          else table.to_s.send(method)
+          end
+        
+        return prefix + [((parent && parent.parent) ? parent.table_alias(method) : nil), t, index].compact.join('_')
       end
       
       def prefix

@@ -8,7 +8,7 @@ module CommaHeaven
       end
       
       def joins
-        case parent
+        sql = case parent
         when HasManyColumns
           if parent.options[:by] == 'row'
             <<-EOS
@@ -33,7 +33,11 @@ module CommaHeaven
             ON #{parent.parent.table_alias}.#{model.primary_key} = #{table_alias}.#{association.primary_key_name}
           EOS
         else ''
-        end.gsub(/\n/, '').squeeze(' ').strip
+        end
+        
+        sql << " AND #{table_alias}.#{association.klass.primary_key} IN (SELECT #{association.klass.primary_key} FROM #{association.quoted_table_name} WHERE #{model.send(:sanitize_sql, association.options[:conditions])})" if parent.respond_to?(:association) && association.options[:conditions]
+
+        sql.gsub(/\n/, '').squeeze(' ').strip
       end
       
       def sql_as
