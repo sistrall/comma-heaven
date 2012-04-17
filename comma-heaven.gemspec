@@ -4,19 +4,28 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{comma-heaven}
-  s.version = "0.6.1"
+  s.name = "comma-heaven"
+  s.version = "0.7.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Silvano Stralla"]
-  s.date = %q{2011-05-17}
-  s.description = %q{CommaHeaven permits easy exports of Rails models to CSV}
-  s.email = %q{silvano.stralla@sistrall.it}
+  s.date = "2012-04-17"
+  s.description = "CommaHeaven permits easy exports of Rails models to CSV"
+  s.email = "silvano.stralla@sistrall.it"
   s.extra_rdoc_files = [
     "LICENSE",
     "README.rdoc"
   ]
   s.files = [
+    ".document",
+    "Gemfile",
+    "Gemfile.lock",
+    "LICENSE",
+    "README.rdoc",
+    "Rakefile",
+    "VERSION",
+    "comma-heaven.gemspec",
+    "init.rb",
     "lib/comma-heaven.rb",
     "lib/comma-heaven/active_record/to_comma_heaven.rb",
     "lib/comma-heaven/export.rb",
@@ -37,27 +46,43 @@ Gem::Specification.new do |s|
     "spec/sqler/has_many_columns_spec.rb",
     "spec/sqler/has_one_association_spec.rb"
   ]
-  s.homepage = %q{http://github.com/sistrall/comma-heaven}
+  s.homepage = "http://github.com/sistrall/comma-heaven"
+  s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.1}
-  s.summary = %q{CSV exporter for Rails}
+  s.rubygems_version = "1.8.13"
+  s.summary = "CSV exporter for Rails"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<activerecord>, ["< 3.0.0"])
+      s.add_runtime_dependency(%q<actionpack>, ["< 3.0.0"])
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_runtime_dependency(%q<activerecord>, [">= 0"])
-      s.add_runtime_dependency(%q<actionpack>, [">= 0"])
+      s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<jeweler>, ["~> 1.8.3"])
+      s.add_development_dependency(%q<simplecov>, [">= 0"])
+      s.add_development_dependency(%q<sqlite3>, [">= 0"])
     else
+      s.add_dependency(%q<activerecord>, ["< 3.0.0"])
+      s.add_dependency(%q<actionpack>, ["< 3.0.0"])
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_dependency(%q<activerecord>, [">= 0"])
-      s.add_dependency(%q<actionpack>, [">= 0"])
+      s.add_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<jeweler>, ["~> 1.8.3"])
+      s.add_dependency(%q<simplecov>, [">= 0"])
+      s.add_dependency(%q<sqlite3>, [">= 0"])
     end
   else
+    s.add_dependency(%q<activerecord>, ["< 3.0.0"])
+    s.add_dependency(%q<actionpack>, ["< 3.0.0"])
     s.add_dependency(%q<rspec>, [">= 1.2.9"])
-    s.add_dependency(%q<activerecord>, [">= 0"])
-    s.add_dependency(%q<actionpack>, [">= 0"])
+    s.add_dependency(%q<rdoc>, ["~> 3.12"])
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<jeweler>, ["~> 1.8.3"])
+    s.add_dependency(%q<simplecov>, [">= 0"])
+    s.add_dependency(%q<sqlite3>, [">= 0"])
   end
 end
 
