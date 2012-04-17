@@ -40,7 +40,7 @@ PLATFORMS
 DEPENDENCIES
   actionpack (< 3.0.0)
   activerecord (< 3.0.0)
-  bundler (~> 1.0.0)
+  bundler (>= 1.0.0)
   jeweler (~> 1.8.3)
   rdoc (~> 3.12)
   rspec (>= 1.2.9)
