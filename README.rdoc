@@ -2,7 +2,7 @@
 
 CommaHeaven aims to be to CSV export what Searchlogic is to search.
 
-[![Build Status](https://secure.travis-ci.org/sistrall/comma-heaven.png?branch=master)](http://travis-ci.org/sistrall/comma-heaven)
+{<img src="https://secure.travis-ci.org/sistrall/comma-heaven.png?branch=master" alt="Build Status" />}[http://travis-ci.org/sistrall/comma-heaven]
 
 == Advice!
 
