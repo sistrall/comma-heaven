@@ -165,13 +165,41 @@ EOS
   end
   
   it "should manage nested associations" do
-    Leaf.to_comma_heaven(:export => {:position => {0 => {}}, :tree => {1 => {:export => {:name => {2 => {}}, :gardener => {3 => {:export => {:name => {4 => {}}}}}}}}}).to_csv.should == <<-EOS
+    Leaf.to_comma_heaven(:export => { :position => {0 => {}}, 
+                                      :tree => {1 => {:export => { :name => {2 => {}}, 
+                                                                   :gardener => {3 => {:export => {:name => {4 => {}}}}}}}}}).to_csv.should == <<-EOS
 leaf_position,tree_name,tree_gardener_name
 top,Olmo,Alice
 middle,Olmo,Alice
 bottom,Olmo,Alice
 0,Ulivo,Bob
 5,Ulivo,Bob
+EOS
+  end
+
+  it 'should manage has_many :through associations (exporting by row)' do
+    Gardener.to_comma_heaven(:export => { :name  => {0 => {}},
+                                          :leafs => {1 => { :by => 'row', 
+                                                            :limit => 10,
+                                                            :export => { :position => {0 => {}},
+                                                                        :height_from_ground => {1 => {}}}}}}).to_csv.should == <<-EOS
+gardener_name,leaf_position,leaf_height_from_ground
+Alice,bottom,
+Alice,middle,
+Alice,top,
+Bob,0,1.0
+Bob,5,2.0
+EOS
+  end
+
+  it 'should manage has_many :through associations (exporting by row)' do
+    Gardener.to_comma_heaven(:export => { :name  => {0 => {}},
+                                          :leafs => {1 => { :limit => 3,
+                                                            :export => { :position => {0 => {}},
+                                                                        :height_from_ground => {1 => {}}}}}}).to_csv.should == <<-EOS
+gardener_name,leaf_0_position,leaf_0_height_from_ground,leaf_1_position,leaf_1_height_from_ground,leaf_2_position,leaf_2_height_from_ground
+Alice,top,,middle,,bottom,
+Bob,0,1.0,5,2.0,,
 EOS
   end
 
@@ -204,9 +232,9 @@ EOS
   it "should allow denormalized export (also called 'by row')" do
     Tree.to_comma_heaven(:export => {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '0', :as => ''}}, :leafs => {2 => {:export => {:position => {4 => {:include => '1', :as => ''}}}, :by => 'row', :limit => 3}}}).to_csv.should == <<-EOS
 tree_name,leaf_position
-Olmo,top
-Olmo,middle
 Olmo,bottom
+Olmo,middle
+Olmo,top
 Ulivo,0
 Ulivo,5
 EOS
@@ -215,18 +243,18 @@ EOS
   it "should allow denormalized export (also called 'by row')" do
     Tree.to_comma_heaven(:export => {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '0', :as => ''}}, :leafs => {2 => {:export => {:position => {4 => {:include => '1', :as => ''}}}, :by => 'row', :limit => 3}}}).to_csv.should == <<-EOS
 tree_name,leaf_position
-Olmo,top
-Olmo,middle
 Olmo,bottom
+Olmo,middle
+Olmo,top
 Ulivo,0
 Ulivo,5
 EOS
 
     Tree.to_comma_heaven(:export => {:name => {0 => {}}, :gardener => {1 => {:export => {:name => {2 => {}}, :surname => {3 => {}}}}}, :leafs => {4 => {:export => {:position => {5 => {}}}, :by => 'row', :limit => 2}}}).to_csv.should == <<-EOS
 tree_name,gardener_name,gardener_surname,leaf_position
-Olmo,Alice,,top
-Olmo,Alice,,middle
 Olmo,Alice,,bottom
+Olmo,Alice,,middle
+Olmo,Alice,,top
 Ulivo,Bob,,0
 Ulivo,Bob,,5
 EOS

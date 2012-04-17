@@ -1,3 +1,5 @@
+require 'ostruct'
+
 module CommaHeaven
   class Export
     module Implementation

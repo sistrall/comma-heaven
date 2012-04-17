@@ -47,7 +47,15 @@ module CommaHeaven
           end
       end
       
+      def join_clause
+        ''
+      end
+      
       protected
+        def quote(string)
+          ::ActiveRecord::Base.connection.quote_column_name(string)
+        end
+
         def limit 
           (options[:limit] || 1).to_i
         end

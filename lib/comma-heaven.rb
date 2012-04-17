@@ -4,6 +4,8 @@ if RUBY_VERSION > "1.9"
   FasterCSV = CSV
 end
 
+require 'active_record'
+
 require 'comma-heaven/active_record/to_comma_heaven'
 require 'comma-heaven/sqler'
 require 'comma-heaven/sqler/column'

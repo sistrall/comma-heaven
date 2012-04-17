@@ -1,25 +1,16 @@
+require 'simplecov'
+SimpleCov.start
+
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'rubygems'
-require RUBY_VERSION > "1.9" ? "csv" : 'fastercsv'
 
-require 'activerecord'
-
-require 'active_support'
-require 'actionpack'
-require 'action_controller'
-require 'action_view'
-
+require 'rspec'
 require 'comma-heaven'
-
-require 'spec'
-require 'spec/autorun'
 
 ENV['TZ'] = 'UTC'
 Time.zone = 'Eastern Time (US & Canada)'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
-# ActiveRecord::Base.establish_connection(:adapter => 'mysql', :database => 'comma_heaven_dev', :encoding => 'utf8', :username => 'root', :password => '') 
 ActiveRecord::Base.configurations = true
 
 ActiveRecord::Schema.verbose = false
@@ -57,10 +48,11 @@ ActiveRecord::Schema.define(:version => 1) do
   end
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.before(:each) do
     class Gardener < ActiveRecord::Base
       has_many :trees
+      has_many :leafs, :through => :trees
       has_one :gardener_clone
     end
     
