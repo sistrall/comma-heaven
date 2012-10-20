@@ -31,7 +31,8 @@ module CommaHeaven
       csv_options = all_options.slice(*FasterCSV::DEFAULT_OPTIONS.keys)
       tch_options = all_options.except(*FasterCSV::DEFAULT_OPTIONS.keys) # TCH means To Comma Heaven
       
-      klass.scoped(current_scope).to_comma_heaven(tch_options.symbolize_keys).to_csv(csv_options.symbolize_keys)
+      ids = klass.scoped(current_scope).find(:all, :select => 'id').map(&:id)
+      klass.scoped(:conditions => ['id IN (?)', ids]).to_comma_heaven(tch_options.symbolize_keys).to_csv(csv_options.symbolize_keys)
     end
 
     private
