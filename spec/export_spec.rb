@@ -41,6 +41,11 @@ describe "Export" do
       Tree.to_comma_heaven(:export => {:name => {0 => {}}, :age => {1 => {}}}).to_csv
   end
 
+  it "should export scoped model" do
+    Tree.scoped(:conditions => {:name => 'Ulivo'}).export(@params).save.should ==
+      Tree.scoped(:conditions => {:name => 'Ulivo'}).to_comma_heaven(@params).to_csv
+  end
+
   it "should export to CSV using customized options made available through FasterCSV" do
     Tree.export(:export => {:name => {0 => {}}, :age => {1 => {}}}, :col_sep => ";", :force_quotes => true).save.should ==
       Tree.to_comma_heaven(:export => {:name => {0 => {}}, :age => {1 => {}}}).to_csv(:col_sep => ";", :force_quotes => true)

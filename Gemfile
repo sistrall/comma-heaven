@@ -11,4 +11,5 @@ group :development do
   gem "jeweler", "~> 1.8.3"
   gem 'simplecov', :require => false
   gem 'sqlite3'
+  gem 'mysql2', '0.2.7'
 end

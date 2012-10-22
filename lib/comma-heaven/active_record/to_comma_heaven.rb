@@ -19,22 +19,26 @@ module CommaHeaven
         FasterCSV::Table.new([]).tap do |table|
           columns = CommaHeaven::Sqler::Columns.new(self, options[:export])
           headers = columns.sql_as
+
+          ids = find(:all, :select => "#{table_name}.#{primary_key}", :limit => options[:limit]).map(&:id)
           
-          find(:all, :limit => options[:limit], :joins => columns.joins, :select => columns.select).each do |resource|
-            fields = columns.sql_as.inject([]) do |acc, field|
-              value = resource.send(field)
-              
-              if options[:format]
-                begin 
-                  value = value.to_time.strftime(options[:format][:datetime]) if value =~ %r{^(\d{4,4})-(\d{2,2})-(\d{2,2})} && options[:format][:datetime]
-                rescue 
+          with_exclusive_scope do
+            find(:all, :conditions => ["#{columns.table_alias}.#{primary_key} IN (?)", ids], :limit => options[:limit], :joins => columns.joins, :select => columns.select).each do |resource|
+              fields = columns.sql_as.inject([]) do |acc, field|
+                value = resource.send(field)
+                
+                if options[:format]
+                  begin 
+                    value = value.to_time.strftime(options[:format][:datetime]) if value =~ %r{^(\d{4,4})-(\d{2,2})-(\d{2,2})} && options[:format][:datetime]
+                  rescue 
+                  end
                 end
+                
+                acc << options[:converter].call(value)
               end
               
-              acc << options[:converter].call(value)
+              table << FasterCSV::Row.new(headers, fields)
             end
-            
-            table << FasterCSV::Row.new(headers, fields)
           end
         end
       end
