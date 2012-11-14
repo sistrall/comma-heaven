@@ -17,4 +17,9 @@ require 'comma-heaven/sqler/belongs_to_columns'
 require 'comma-heaven/export'
 
 ActiveRecord::Base.send(:extend, CommaHeaven::Export::Implementation)
-ActiveRecord::Base.send(:extend, CommaHeaven::ActiveRecord::ClassMethods)
+
+case ActiveRecord::VERSION::MAJOR
+when 1 then ActiveRecord::Base.send(:extend, CommaHeaven::ActiveRecord::ClassMethods::Rails1)
+when 2 then ActiveRecord::Base.send(:extend, CommaHeaven::ActiveRecord::ClassMethods::Rails2)
+else        ActiveRecord::Base.send(:extend, CommaHeaven::ActiveRecord::ClassMethods::Rails3)
+end

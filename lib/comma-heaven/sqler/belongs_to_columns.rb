@@ -4,7 +4,7 @@ module CommaHeaven
       def join_clause
         <<-EOS
         LEFT JOIN #{quote(table)} AS #{table_alias}
-          ON #{table_alias}.#{model.primary_key} = #{parent.table_alias}.#{association.primary_key_name}
+          ON #{table_alias}.#{model.primary_key} = #{parent.table_alias}.#{foreign_key_for(association)}
         EOS
       end
     end

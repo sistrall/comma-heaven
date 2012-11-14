@@ -1,3 +1,4 @@
+require "awesome_print"
 require 'simplecov'
 SimpleCov.start
 
@@ -16,6 +17,8 @@ ActiveRecord::Base.configurations = true
 # ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 ActiveRecord::Schema.verbose = false
+
+puts ActiveRecord::VERSION::MAJOR
 
 RSpec.configure do |config|
   config.before(:all) do
@@ -69,9 +72,18 @@ RSpec.configure do |config|
       belongs_to :gardener
       has_many :leafs, :dependent => :destroy
       has_many :matching_o_leafs, :class_name => 'Leaf', :conditions => ['position LIKE ?', '%o%']
-      
-      named_scope :that_begins_with_o, {:conditions => ['name LIKE ?', 'o%']}
     end
+
+    case ActiveRecord::VERSION::MAJOR
+    when 1, 2
+      class Tree < ActiveRecord::Base
+        named_scope :that_begins_with_o, {:conditions => ['name LIKE ?', 'o%']}
+      end
+    else
+      class Tree < ActiveRecord::Base
+        scope :that_begins_with_o, {:conditions => ['name LIKE ?', 'o%']}
+      end
+    end      
 
     class Leaf < ActiveRecord::Base
       belongs_to :tree
@@ -81,7 +93,7 @@ RSpec.configure do |config|
     class Cell < ActiveRecord::Base
       belongs_to :leaf
     end
-    
+
     Gardener.destroy_all
     GardenerClone.destroy_all
     Tree.destroy_all
@@ -89,12 +101,12 @@ RSpec.configure do |config|
     Cell.destroy_all
   end
   
-  config.after(:each) do
-    Object.send(:remove_const, :Gardener)
-    Object.send(:remove_const, :Tree)
-    Object.send(:remove_const, :Leaf)
-    Object.send(:remove_const, :Cell)
-  end
+  # config.after(:each) do
+  #   Object.send(:remove_const, :Gardener)
+  #   Object.send(:remove_const, :Tree)
+  #   Object.send(:remove_const, :Leaf)
+  #   Object.send(:remove_const, :Cell)
+  # end
 
   config.after(:all) do
     ActiveRecord::Schema.define(:version => 2) do

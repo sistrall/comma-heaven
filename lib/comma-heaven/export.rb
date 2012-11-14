@@ -4,7 +4,27 @@ module CommaHeaven
   class Export
     module Implementation
       def export(options = {})
-        Export.new(self, scope(:find), options)
+        Export.new(self, export_scope, options)
+      end
+
+      module Rails3
+        def export_scope
+          scoped
+        end
+      end
+
+      module Rails2
+        def export_scope
+          scoped(scope(:find))
+        end
+      end
+
+      Rails1 = Rails2
+
+      case ::ActiveRecord::VERSION::MAJOR
+      when 1 then include Rails1
+      when 2 then include Rails2
+      else        include Rails3
       end
     end
     
@@ -31,7 +51,9 @@ module CommaHeaven
       csv_options = all_options.slice(*FasterCSV::DEFAULT_OPTIONS.keys)
       tch_options = all_options.except(*FasterCSV::DEFAULT_OPTIONS.keys) # TCH means To Comma Heaven
       
-      klass.scoped(current_scope).to_comma_heaven(tch_options.symbolize_keys).to_csv(csv_options.symbolize_keys)
+      current_scope
+        .to_comma_heaven(tch_options.symbolize_keys)
+        .to_csv(csv_options.symbolize_keys)
     end
 
     private

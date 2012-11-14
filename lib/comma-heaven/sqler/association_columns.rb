@@ -12,6 +12,10 @@ module CommaHeaven
         self.index = index
         super(association.klass, export, options)
       end
+
+      def foreign_key_for(an_association)
+        an_association.respond_to?(:foreign_key) ? an_association.foreign_key : an_association.primary_key_name
+      end
     end
   end
 end
