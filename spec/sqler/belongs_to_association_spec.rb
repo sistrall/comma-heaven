@@ -15,7 +15,7 @@ describe "BelongsToColumns" do
     column = CommaHeaven::Sqler::BelongsToColumns.new(@association, {:age => {4 => {:include => '1', :as => ''}}}, 1, @leaf)
     column.joins.should == <<-EOS.gsub(/\n/, ' ').squeeze(' ').strip
 LEFT JOIN "trees" AS _trees
- ON _trees.id = leafs.tree_id
+ ON _trees.id = leaves.tree_id
 EOS
   end
 end

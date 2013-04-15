@@ -41,7 +41,7 @@ RSpec.configure do |config|
         t.integer :gardener_id
       end
       
-      create_table :leafs do |t|
+      create_table :leaves do |t|
         t.integer :tree_id
         t.string :position
         t.float :size
@@ -86,6 +86,8 @@ RSpec.configure do |config|
     end      
 
     class Leaf < ActiveRecord::Base
+      self.table_name = 'leaves'
+
       belongs_to :tree
       has_many :cells
     end
@@ -113,7 +115,7 @@ RSpec.configure do |config|
       drop_table :gardeners
       drop_table :gardener_clones
       drop_table :trees
-      drop_table :leafs
+      drop_table :leaves
       drop_table :cells
     end
   end
