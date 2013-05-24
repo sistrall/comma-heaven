@@ -18,11 +18,15 @@ ActiveRecord::Base.configurations = true
 
 ActiveRecord::Schema.verbose = false
 
-puts ActiveRecord::VERSION::MAJOR
+puts ActiveRecord::VERSION::STRING
 
 RSpec.configure do |config|
   config.before(:all) do
     ActiveRecord::Schema.define(:version => 1) do
+      create_table :gardens_ruben_the_prince do |t|
+        t.string :name
+      end
+
       create_table :gardeners do |t|
         t.string :name
         t.string :surname
@@ -39,6 +43,7 @@ RSpec.configure do |config|
         t.string :name
         t.integer :age
         t.integer :gardener_id
+        t.integer :garden_id
       end
       
       create_table :leaves do |t|
@@ -69,6 +74,7 @@ RSpec.configure do |config|
     end
     
     class Tree < ActiveRecord::Base
+      belongs_to :garden
       belongs_to :gardener
       has_many :leafs, :dependent => :destroy
       has_many :matching_o_leafs, :class_name => 'Leaf', :conditions => ['position LIKE ?', '%o%']
@@ -76,26 +82,44 @@ RSpec.configure do |config|
 
     case ActiveRecord::VERSION::MAJOR
     when 1, 2
+      class Garden < ActiveRecord::Base
+        set_table_name 'gardens_ruben_the_prince'
+        has_many :trees
+      end
+
       class Tree < ActiveRecord::Base
         named_scope :that_begins_with_o, {:conditions => ['name LIKE ?', 'o%']}
       end
+  
+      class Leaf < ActiveRecord::Base
+        set_table_name 'leaves'
+
+        belongs_to :tree
+        has_many :cells
+      end
     else
+      class Garden < ActiveRecord::Base
+        self.table_name = 'gardens_ruben_the_prince'
+        has_many :trees
+      end
+
       class Tree < ActiveRecord::Base
         scope :that_begins_with_o, {:conditions => ['name LIKE ?', 'o%']}
       end
+
+      class Leaf < ActiveRecord::Base
+        self.table_name = 'leaves'
+
+        belongs_to :tree
+        has_many :cells
+      end
     end      
 
-    class Leaf < ActiveRecord::Base
-      self.table_name = 'leaves'
-
-      belongs_to :tree
-      has_many :cells
-    end
-    
     class Cell < ActiveRecord::Base
       belongs_to :leaf
     end
 
+    Garden.destroy_all
     Gardener.destroy_all
     GardenerClone.destroy_all
     Tree.destroy_all
@@ -103,15 +127,9 @@ RSpec.configure do |config|
     Cell.destroy_all
   end
   
-  # config.after(:each) do
-  #   Object.send(:remove_const, :Gardener)
-  #   Object.send(:remove_const, :Tree)
-  #   Object.send(:remove_const, :Leaf)
-  #   Object.send(:remove_const, :Cell)
-  # end
-
   config.after(:all) do
     ActiveRecord::Schema.define(:version => 2) do
+      drop_table :gardens_ruben_the_prince
       drop_table :gardeners
       drop_table :gardener_clones
       drop_table :trees

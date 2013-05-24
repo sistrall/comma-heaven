@@ -2,15 +2,17 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "Export" do
   before(:each) do
+    garden = Garden.create(:name => 'Camdem')
+
     alice = Gardener.create(:name => 'Alice')
     bob   = Gardener.create(:name => 'Bob')
     
-    olmo = Tree.create(:name => 'Olmo', :age => 100, :gardener => alice)
+    olmo = Tree.create(:name => 'Olmo', :age => 100, :gardener => alice, :garden => garden)
     olmo.leafs.create(:position => 'top')
     olmo.leafs.create(:position => 'middle')
     olmo.leafs.create(:position => 'bottom')
 
-    ulivo = Tree.create(:name => 'Ulivo', :age => 150, :gardener => bob)
+    ulivo = Tree.create(:name => 'Ulivo', :age => 150, :gardener => bob, :garden => garden)
     ulivo.leafs.create(:position => '0', :height_from_ground => 1)
     ulivo.leafs.create(:position => '5', :height_from_ground => 2)
 
@@ -19,6 +21,13 @@ describe "Export" do
                       "name" => {"1" => {"as" => "", "include" => "1"} }, 
                       "leafs" => {"2" => {"export" => { "position" => {"3" => {"as" => "", "include" => '1'} },
                                                           "height_from_ground" => {"4" => {'as' => '', :include => '1'} } } } } } }
+  end
+
+  it 'should export even models with explicitly set names, without making errors with pluralization' do
+    expect do 
+      Garden.export({ 'export' => { "name"  => {"0" => {"as" => '', 'include' => '1'} },
+                                    "trees" => {"1" => @params.merge(:limit => 3)} } }).save
+    end.to_not raise_error(Exception)
   end
   
   it 'should make available columns available as methods' do

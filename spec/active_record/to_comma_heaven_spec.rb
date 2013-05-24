@@ -192,7 +192,7 @@ Bob,5,2.0
 EOS
   end
 
-  it 'should manage has_many :through associations (exporting by row)' do
+  it 'should manage has_many :through associations (exporting by column)' do
     Gardener.to_comma_heaven(:export => { :name  => {0 => {}},
                                           :leafs => {1 => { :limit => 3,
                                                             :export => { :position => {0 => {}},
