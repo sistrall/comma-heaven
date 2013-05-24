@@ -101,8 +101,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  actionpack (~> 3.0)
-  activerecord (~> 3.0)
+  actionpack (< 4.0)
+  activerecord (< 4.0)
   awesome_print
   bundler (>= 1.0.0)
   guard
