@@ -11,8 +11,8 @@ require 'comma-heaven'
 ENV['TZ'] = 'UTC'
 Time.zone = 'Eastern Time (US & Canada)'
 
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
-# ActiveRecord::Base.establish_connection(:adapter => "mysql2", :database => "comma-heaven-test", :user => 'root', :password => '')
+# ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+ActiveRecord::Base.establish_connection(:adapter => "mysql2", :database => "comma-heaven-test", :user => 'root', :password => '')
 ActiveRecord::Base.configurations = true
 # ActiveRecord::Base.logger = Logger.new(STDOUT)
 

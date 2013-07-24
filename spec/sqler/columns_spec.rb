@@ -136,30 +136,30 @@ describe "Columns" do
   
   it "should build correct SQL select clause exporting simple fields" do
     columns = CommaHeaven::Sqler::Columns.new(Tree, {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '1', :as => ''}}})
-    columns.select.should == 'trees.name AS "tree_name", trees.age AS "tree_age"'
+    columns.select.should == 'trees.name AS `tree_name`, trees.age AS `tree_age`'
   end
   
   it "should build correct SQL select clause exporting simple fields, including only wanted fields" do
     columns = CommaHeaven::Sqler::Columns.new(Tree, {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '0', :as => ''}}})
-    columns.select.should == 'trees.name AS "tree_name"'
+    columns.select.should == 'trees.name AS `tree_name`'
   end
    
   it "should build correct SQL select and joins clauses exporting has many association" do
     columns = CommaHeaven::Sqler::Columns.new(Tree, {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '1', :as => ''}}, :leafs => {2 => {:export => {:position => {4 => {:include => '1', :as => ''}}}, :limit => '3'}}})
-    columns.select.should == 'trees.name AS "tree_name", trees.age AS "tree_age", _leafs_0.position AS "leaf_0_position", _leafs_1.position AS "leaf_1_position", _leafs_2.position AS "leaf_2_position"'
+    columns.select.should == 'trees.name AS `tree_name`, trees.age AS `tree_age`, _leafs_0.position AS `leaf_0_position`, _leafs_1.position AS `leaf_1_position`, _leafs_2.position AS `leaf_2_position`'
     columns.joins.should  =~ /LEFT JOIN/
   end
   
   it "should build correct SQL select and joins clauses exporting belongs to association" do
     columns = CommaHeaven::Sqler::Columns.new(Tree, {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '1', :as => ''}}, :gardener => {2 => {:export => {:surname => {4 => {:include => '1', :as => ''}}}}}})
-    columns.select.should == 'trees.name AS "tree_name", trees.age AS "tree_age", _gardeners.surname AS "gardener_surname"'
+    columns.select.should == 'trees.name AS `tree_name`, trees.age AS `tree_age`, _gardeners.surname AS `gardener_surname`'
     columns.joins.should  =~ /\s_gardeners\s/
     columns.joins.should  =~ /LEFT JOIN/
   end
   
   it "should build corrent SQL select and joins clauses for deeper associations" do
     columns = CommaHeaven::Sqler::Columns.new(Gardener, {:name => {0 => {:include => '1', :as => ''}}, :trees => {1 => {:export => {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '1', :as => ''}}, :gardener => {2 => {:export => {:surname => {4 => {:include => '1', :as => ''}}}}}}, :limit => 3}}})
-    columns.select.should == 'gardeners.name AS "gardener_name", _trees_0.name AS "tree_0_name", _trees_0.age AS "tree_0_age", __trees_0_gardeners.surname AS "tree_0_gardener_surname", _trees_1.name AS "tree_1_name", _trees_1.age AS "tree_1_age", __trees_1_gardeners.surname AS "tree_1_gardener_surname", _trees_2.name AS "tree_2_name", _trees_2.age AS "tree_2_age", __trees_2_gardeners.surname AS "tree_2_gardener_surname"'
+    columns.select.should == 'gardeners.name AS `gardener_name`, _trees_0.name AS `tree_0_name`, _trees_0.age AS `tree_0_age`, __trees_0_gardeners.surname AS `tree_0_gardener_surname`, _trees_1.name AS `tree_1_name`, _trees_1.age AS `tree_1_age`, __trees_1_gardeners.surname AS `tree_1_gardener_surname`, _trees_2.name AS `tree_2_name`, _trees_2.age AS `tree_2_age`, __trees_2_gardeners.surname AS `tree_2_gardener_surname`'
     columns.joins.should  =~ /LEFT JOIN/
     columns.joins.should  =~ /_trees/
     columns.joins.should  =~ /_gardeners/
@@ -187,7 +187,7 @@ describe "Columns" do
     columns.joins.should  =~ /trees/
     columns.joins.should  =~ /gardeners/
     columns.joins.should  =~ /leafs/
-    columns.select.should == 'gardeners.name AS "gardener_name", _trees_0.name AS "tree_0_name", _trees_0.age AS "tree_0_age", __trees_0_gardeners.surname AS "tree_0_gardener_surname", __trees_0_leafs_0.position AS "tree_0_leaf_0_position", __trees_0_leafs_1.position AS "tree_0_leaf_1_position", _trees_1.name AS "tree_1_name", _trees_1.age AS "tree_1_age", __trees_1_gardeners.surname AS "tree_1_gardener_surname", __trees_1_leafs_0.position AS "tree_1_leaf_0_position", __trees_1_leafs_1.position AS "tree_1_leaf_1_position", _trees_2.name AS "tree_2_name", _trees_2.age AS "tree_2_age", __trees_2_gardeners.surname AS "tree_2_gardener_surname", __trees_2_leafs_0.position AS "tree_2_leaf_0_position", __trees_2_leafs_1.position AS "tree_2_leaf_1_position"'
+    columns.select.should == 'gardeners.name AS `gardener_name`, _trees_0.name AS `tree_0_name`, _trees_0.age AS `tree_0_age`, __trees_0_gardeners.surname AS `tree_0_gardener_surname`, __trees_0_leafs_0.position AS `tree_0_leaf_0_position`, __trees_0_leafs_1.position AS `tree_0_leaf_1_position`, _trees_1.name AS `tree_1_name`, _trees_1.age AS `tree_1_age`, __trees_1_gardeners.surname AS `tree_1_gardener_surname`, __trees_1_leafs_0.position AS `tree_1_leaf_0_position`, __trees_1_leafs_1.position AS `tree_1_leaf_1_position`, _trees_2.name AS `tree_2_name`, _trees_2.age AS `tree_2_age`, __trees_2_gardeners.surname AS `tree_2_gardener_surname`, __trees_2_leafs_0.position AS `tree_2_leaf_0_position`, __trees_2_leafs_1.position AS `tree_2_leaf_1_position`'
     
     Gardener.scoped(:joins => columns.joins).count.should == 2
     Gardener.scoped(:joins => columns.joins, :select => columns.select).first.attributes.to_a.length.should == 16

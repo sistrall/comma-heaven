@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
-gem "activerecord", ENV['AGAINST'] || "< 4.0" 
-gem "actionpack",   ENV['AGAINST'] || "< 4.0" 
+gem "activerecord", ENV['AGAINST'] || "< 3.0" 
+gem "actionpack",   ENV['AGAINST'] || "< 3.0" 
 gem "fastercsv" unless RUBY_VERSION > "1.9"
 
 group :development do

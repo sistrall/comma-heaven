@@ -184,9 +184,9 @@ EOS
                                                             :export => { :position => {0 => {}},
                                                                         :height_from_ground => {1 => {}}}}}}).to_csv.should == <<-EOS
 gardener_name,leaf_position,leaf_height_from_ground
-Alice,bottom,
-Alice,middle,
 Alice,top,
+Alice,middle,
+Alice,bottom,
 Bob,0,1.0
 Bob,5,2.0
 EOS
