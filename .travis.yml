@@ -1,2 +1,6 @@
+language: ruby
+rvm:
+  - 1.9.2
+
 before_script:
-  - mysql -e 'create database comma-heaven-test;'
+  - mysql -e 'create database comma_heaven_test;'
