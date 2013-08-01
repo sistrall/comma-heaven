@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Silvano Stralla"]
-  s.date = "2013-05-24"
+  s.date = "2013-08-01"
   s.description = "CommaHeaven permits easy exports of Rails models to CSV"
   s.email = "silvano.stralla@sistrall.it"
   s.extra_rdoc_files = [
@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".document",
+    ".ruby-version",
+    ".travis.yml",
     "Gemfile",
     "Gemfile.lock",
     "Guardfile",
@@ -26,6 +28,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "comma-heaven.gemspec",
+    "config/database.yml",
     "init.rb",
     "lib/comma-heaven.rb",
     "lib/comma-heaven/active_record/to_comma_heaven.rb",
@@ -57,8 +60,8 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activerecord>, ["< 4.0"])
-      s.add_runtime_dependency(%q<actionpack>, ["< 4.0"])
+      s.add_runtime_dependency(%q<activerecord>, ["< 3.0"])
+      s.add_runtime_dependency(%q<actionpack>, ["< 3.0"])
       s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
@@ -73,8 +76,8 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rb-fsevent>, ["~> 0.9"])
       s.add_development_dependency(%q<rb-readline>, [">= 0"])
     else
-      s.add_dependency(%q<activerecord>, ["< 4.0"])
-      s.add_dependency(%q<actionpack>, ["< 4.0"])
+      s.add_dependency(%q<activerecord>, ["< 3.0"])
+      s.add_dependency(%q<actionpack>, ["< 3.0"])
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
@@ -90,8 +93,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rb-readline>, [">= 0"])
     end
   else
-    s.add_dependency(%q<activerecord>, ["< 4.0"])
-    s.add_dependency(%q<actionpack>, ["< 4.0"])
+    s.add_dependency(%q<activerecord>, ["< 3.0"])
+    s.add_dependency(%q<actionpack>, ["< 3.0"])
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 1.2.9"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
