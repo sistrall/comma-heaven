@@ -87,7 +87,7 @@ module CommaHeaven
           @export.to_a.map do |f,o| 
             [f, o.to_a.first.first, o.to_a.first.last]
           end.sort do |a,b|
-            a[1] <=> b[1]
+            a[1].to_i <=> b[1].to_i
           end.each do |column_or_association, position, opts|
             opts.symbolize_keys! if opts.respond_to?(:symbolize_keys!)
             
