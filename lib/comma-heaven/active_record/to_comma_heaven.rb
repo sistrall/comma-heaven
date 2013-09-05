@@ -13,7 +13,7 @@ module CommaHeaven
         end
         
         def to_comma_heaven(options = {})
-          options.symbolize_keys!
+          options.symbolize_keys! if options.respond_to?(:symbolize_keys!)
           options[:limit] = options[:limit].to_i if options[:limit].kind_of?(String)
           options[:converter] ||= lambda { |v| v }
           
@@ -57,7 +57,7 @@ module CommaHeaven
         end
         
         def to_comma_heaven(options = {})
-          options.symbolize_keys!
+          options.symbolize_keys! if options.respond_to?(:symbolize_keys!)
           options[:limit] = options[:limit].to_i if options[:limit].kind_of?(String)
           options[:converter] ||= lambda { |v| v }
           

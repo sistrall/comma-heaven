@@ -36,11 +36,11 @@ module CommaHeaven
       self.current_scope = current_scope
       self.options = options || {}
       
-      self.options.symbolize_keys!
+      self.options.symbolize_keys! if self.options.respond_to?(:symbolize_keys!)
       
       self.export = self.options[:export] || {}
       
-      self.export.symbolize_keys!
+      self.export.symbolize_keys! if self.export.respond_to?(:symbolize_keys!)
       
       self.limit = self.options[:limit]
     end
@@ -50,10 +50,13 @@ module CommaHeaven
       
       csv_options = all_options.slice(*FasterCSV::DEFAULT_OPTIONS.keys)
       tch_options = all_options.except(*FasterCSV::DEFAULT_OPTIONS.keys) # TCH means To Comma Heaven
+
+      tch_options = tch_options.symbolize_keys if tch_options.respond_to?(:symbolize_keys!)
+      csv_options = csv_options.symbolize_keys if csv_options.respond_to?(:symbolize_keys!)
       
       current_scope
-        .to_comma_heaven(tch_options.symbolize_keys)
-        .to_csv(csv_options.symbolize_keys)
+        .to_comma_heaven(tch_options)
+        .to_csv(csv_options)
     end
 
     private
