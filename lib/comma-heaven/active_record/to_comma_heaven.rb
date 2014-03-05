@@ -30,7 +30,8 @@ module CommaHeaven
                   
                   if options[:format]
                     begin 
-                      value = value.to_time.strftime(options[:format][:datetime]) if value =~ %r{^(\d{4,4})-(\d{2,2})-(\d{2,2})} && options[:format][:datetime]
+                      value = value.strftime(options[:format][:date]) if value.is_a?(Date) && options[:format][:date]
+                      value = value.strftime(options[:format][:datetime]) if value.is_a?(Time) && options[:format][:datetime]
                     rescue 
                     end
                   end
@@ -74,7 +75,8 @@ module CommaHeaven
                   
                   if options[:format]
                     begin 
-                      value = value.strftime(options[:format][:datetime]) if (value.is_a?(Date) || value.is_a?(Time)) && options[:format][:datetime]
+                      value = value.strftime(options[:format][:date]) if value.is_a?(Date) && options[:format][:date]
+                      value = value.strftime(options[:format][:datetime]) if value.is_a?(Time) && options[:format][:datetime]
                     rescue 
                     end
                   end

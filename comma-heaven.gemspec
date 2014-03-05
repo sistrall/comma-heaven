@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Silvano Stralla"]
-  s.date = "2013-08-01"
+  s.date = "2014-03-05"
   s.description = "CommaHeaven permits easy exports of Rails models to CSV"
   s.email = "silvano.stralla@sistrall.it"
   s.extra_rdoc_files = [
