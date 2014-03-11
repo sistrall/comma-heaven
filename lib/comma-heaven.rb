@@ -23,3 +23,13 @@ when 1 then ActiveRecord::Base.send(:extend, CommaHeaven::ActiveRecord::ClassMet
 when 2 then ActiveRecord::Base.send(:extend, CommaHeaven::ActiveRecord::ClassMethods::Rails2)
 else        ActiveRecord::Base.send(:extend, CommaHeaven::ActiveRecord::ClassMethods::Rails3)
 end
+
+module Rails
+ def logger
+   if defined?(RAILS_DEFAULT_LOGGER)
+     RAILS_DEFAULT_LOGGER
+   else
+     nil
+   end
+ end
+end

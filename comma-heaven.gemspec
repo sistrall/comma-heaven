@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "comma-heaven"
-  s.version = "0.8.3"
+  s.version = "0.8.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Silvano Stralla"]
-  s.date = "2014-03-06"
+  s.date = "2014-03-11"
   s.description = "CommaHeaven permits easy exports of Rails models to CSV"
   s.email = "silvano.stralla@sistrall.it"
   s.extra_rdoc_files = [

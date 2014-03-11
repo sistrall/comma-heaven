@@ -71,7 +71,7 @@ module CommaHeaven
             with_exclusive_scope do
               find(:all, :conditions => ["#{columns.table_alias}.#{primary_key} IN (?)", ids], :limit => options[:limit], :joins => columns.joins, :select => columns.select).each do |resource|
                 fields = columns.sql_as.inject([]) do |acc, field|
-                  value = resource.send(field)
+                  value = resource.read_attribute(:"#{field}")
                   
                   if options[:format]
                     begin 
