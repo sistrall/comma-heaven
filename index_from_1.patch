@@ -1,0 +1,297 @@
+From 601a4b9351c92edbce50ddc2291ec92ce071d4d5 Mon Sep 17 00:00:00 2001
+From: Fabio Saccona <fabio.saccona@cpo.it>
+Date: Fri, 16 May 2014 16:39:49 +0200
+Subject: [PATCH] Associations columns names with index starting from 1,
+ instead of 0
+
+---
+ lib/comma-heaven/sqler/association_columns.rb |    4 +--
+ lib/comma-heaven/sqler/column.rb              |    2 +-
+ lib/comma-heaven/sqler/columns.rb             |    2 +-
+ spec/active_record/to_comma_heaven_spec.rb    |   34 ++++++++++++-------------
+ spec/sqler/columns_spec.rb                    |   10 ++++----
+ spec/sqler/has_many_columns_spec.rb           |   20 +++++++--------
+ 6 files changed, 36 insertions(+), 36 deletions(-)
+
+diff --git a/lib/comma-heaven/sqler/association_columns.rb b/lib/comma-heaven/sqler/association_columns.rb
+index 1edd173..4201aaa 100644
+--- a/lib/comma-heaven/sqler/association_columns.rb
++++ b/lib/comma-heaven/sqler/association_columns.rb
+@@ -19,8 +19,8 @@ module CommaHeaven
+ 
+       def table_alias(method = :pluralize)
+         t = association.name.to_s.send(method)
+-        
+-        return prefix + [((parent && parent.parent) ? parent.table_alias(method) : nil), t, index].compact.join('_')
++
++        return prefix + [((parent && parent.parent) ? parent.table_alias(method) : nil), t, ((index + 1) rescue nil)].compact.join('_')
+       end
+ 
+       def prefix
+diff --git a/lib/comma-heaven/sqler/column.rb b/lib/comma-heaven/sqler/column.rb
+index 04c446a..fce6d2b 100644
+--- a/lib/comma-heaven/sqler/column.rb
++++ b/lib/comma-heaven/sqler/column.rb
+@@ -16,7 +16,7 @@ module CommaHeaven
+       end
+       
+       def sql_as
+-        return as % index if as
++        return as % ((index + 1) rescue nil) if as
+         return [table_alias(:singularize).gsub(/^_+/, ''), attribute].compact.join('_')
+       end
+ 
+diff --git a/lib/comma-heaven/sqler/columns.rb b/lib/comma-heaven/sqler/columns.rb
+index 5e29e0f..dc7888b 100644
+--- a/lib/comma-heaven/sqler/columns.rb
++++ b/lib/comma-heaven/sqler/columns.rb
+@@ -39,7 +39,7 @@ module CommaHeaven
+             model.name.underscore
+           end
+         
+-        return prefix + [((parent && parent.parent) ? parent.table_alias(method) : nil), t, index].compact.join('_')
++        return prefix + [((parent && parent.parent) ? parent.table_alias(method) : nil), t, ((index + 1) rescue nil)].compact.join('_')
+       end
+       
+       def prefix
+diff --git a/spec/active_record/to_comma_heaven_spec.rb b/spec/active_record/to_comma_heaven_spec.rb
+index b9eea63..99bd7eb 100644
+--- a/spec/active_record/to_comma_heaven_spec.rb
++++ b/spec/active_record/to_comma_heaven_spec.rb
+@@ -22,7 +22,7 @@ describe "CommaHeaven" do
+   
+   it 'should allow export options using string as well as symbol' do
+     expected = <<-EOS
+-tree_name,leaf_0_position,leaf_1_position,leaf_2_position
++tree_name,leaf_1_position,leaf_2_position,leaf_3_position
+ Olmo,top,middle,bottom
+ Ulivo,0,5,
+ EOS
+@@ -33,7 +33,7 @@ EOS
+ 
+   it 'should allow limit using a string' do
+     expected = <<-EOS
+-tree_name,leaf_0_position,leaf_1_position,leaf_2_position
++tree_name,leaf_1_position,leaf_2_position,leaf_3_position
+ Olmo,top,middle,bottom
+ Ulivo,0,5,
+ EOS
+@@ -50,7 +50,7 @@ Ulivo,150
+ EOS
+ 
+     Tree.to_comma_heaven(:export => {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '0', :as => ''}}, :leafs => {2 => {:export => {:position => {4 => {:include => '1', :as => ''}}}, :limit => 3}}}).to_csv.should == <<-EOS
+-tree_name,leaf_0_position,leaf_1_position,leaf_2_position
++tree_name,leaf_1_position,leaf_2_position,leaf_3_position
+ Olmo,top,middle,bottom
+ Ulivo,0,5,
+ EOS
+@@ -60,7 +60,7 @@ EOS
+     pero = Tree.create(:name => 'Pero', :age => 10)
+ 
+     Tree.to_comma_heaven(:export => {:name => {0 => {}}, :age => {1 => {}}, :leafs => {2 => {:export => {:position => {4 => {}}}, :limit => ''}}}).to_csv.should == <<-EOS
+-tree_name,tree_age,leaf_0_position
++tree_name,tree_age,leaf_1_position
+ Olmo,100,top
+ Ulivo,150,0
+ Pero,10,
+@@ -93,7 +93,7 @@ EOS
+     pero = Tree.create(:name => 'Pero', :age => 10)
+ 
+     Tree.to_comma_heaven(:export => {:name => {0 => {}}, :age => {1 => {}}, :leafs => {2 => {:export => {:position => {4 => {}}}}}}).to_csv.should == <<-EOS
+-tree_name,tree_age,leaf_0_position
++tree_name,tree_age,leaf_1_position
+ Olmo,100,top
+ Ulivo,150,0
+ Pero,10,
+@@ -102,7 +102,7 @@ EOS
+   
+   it 'should export only selected columns' do
+     Tree.to_comma_heaven(:export => {:name => {0 => {:include => '1'}}, :age => {1 => {:include => '0'}}, :leafs => {2 => {:export => {:position => {4 => {:include => '1'}}}, :limit => 3}}}).to_csv.should == <<-EOS
+-tree_name,leaf_0_position,leaf_1_position,leaf_2_position
++tree_name,leaf_1_position,leaf_2_position,leaf_3_position
+ Olmo,top,middle,bottom
+ Ulivo,0,5,
+ EOS
+@@ -110,13 +110,13 @@ EOS
+   
+   it "should convert to CSV associated resources by column" do
+     Tree.to_comma_heaven(:export => {:name => {0 => {}}, :age => {1 => {}}, :leafs => {2 => {:export => {:position => {4 => {}}}, :limit => 3}}}).to_csv.should == <<-EOS
+-tree_name,tree_age,leaf_0_position,leaf_1_position,leaf_2_position
++tree_name,tree_age,leaf_1_position,leaf_2_position,leaf_3_position
+ Olmo,100,top,middle,bottom
+ Ulivo,150,0,5,
+ EOS
+ 
+     Tree.to_comma_heaven(:export => {:name => {0 => {}}, :age => {1 => {}}, :leafs => {2 => {:export => {:position => {4 => {}}}, :limit => 1}}}).to_csv.should == <<-EOS
+-tree_name,tree_age,leaf_0_position
++tree_name,tree_age,leaf_1_position
+ Olmo,100,top
+ Ulivo,150,0
+ EOS
+@@ -130,21 +130,21 @@ EOS
+                                       "leafs" => {'1' => {:export =>  { 'position' => {'2' => {'include' => '1'}}, 
+                                                                         'height_from_ground' => {'3' => {'include' => '1'}}}, 
+                                                           :limit => 1}}}).to_csv.should == 
+-      "tree_name,leaf_0_position,leaf_0_height_from_ground\nOlmo,top,""\nUlivo,0,1.0\n"
++      "tree_name,leaf_1_position,leaf_1_height_from_ground\nOlmo,top,""\nUlivo,0,1.0\n"
+   end
+   
+   it "should manage correcly use of limit option" do
+     Tree.to_comma_heaven(:export => {:name => {0 => {}}, :leafs => {1 => {:export => {:position => {2 => {}}}, :limit => 1}}}).to_csv.should == 
+-      "tree_name,leaf_0_position\nOlmo,top\nUlivo,0\n"
++      "tree_name,leaf_1_position\nOlmo,top\nUlivo,0\n"
+ 
+     Tree.to_comma_heaven(:export => {:name => {0 => {}}, :leafs => {1 => {:export => {:position => {2 => {}}}, :limit => 3}}}).to_csv.should == <<-EOS
+-tree_name,leaf_0_position,leaf_1_position,leaf_2_position
++tree_name,leaf_1_position,leaf_2_position,leaf_3_position
+ Olmo,top,middle,bottom
+ Ulivo,0,5,
+ EOS
+ 
+     Tree.to_comma_heaven(:export => {:name => {0 => {}}, :leafs => {1 => {:export => {:position => {2 => {}}}, :limit => 5}}}).to_csv.should == <<-EOS
+-tree_name,leaf_0_position,leaf_1_position,leaf_2_position,leaf_3_position,leaf_4_position
++tree_name,leaf_1_position,leaf_2_position,leaf_3_position,leaf_4_position,leaf_5_position
+ Olmo,top,middle,bottom,,
+ Ulivo,0,5,,,
+ EOS
+@@ -158,7 +158,7 @@ Ulivo,Bob,
+ EOS
+ 
+     Tree.to_comma_heaven(:export => {:name => {0 => {}}, :gardener => {1 => {:export => {:name => {2 => {}}, :surname => {3 => {}}}}}, :leafs => {4 => {:export => {:position => {5 => {}}}, :limit => 2}}}).to_csv.should == <<-EOS
+-tree_name,gardener_name,gardener_surname,leaf_0_position,leaf_1_position
++tree_name,gardener_name,gardener_surname,leaf_1_position,leaf_2_position
+ Olmo,Alice,,top,middle
+ Ulivo,Bob,,0,5
+ EOS
+@@ -197,7 +197,7 @@ EOS
+                                           :leafs => {1 => { :limit => 3,
+                                                             :export => { :position => {0 => {}},
+                                                                         :height_from_ground => {1 => {}}}}}}).to_csv.should == <<-EOS
+-gardener_name,leaf_0_position,leaf_0_height_from_ground,leaf_1_position,leaf_1_height_from_ground,leaf_2_position,leaf_2_height_from_ground
++gardener_name,leaf_1_position,leaf_1_height_from_ground,leaf_2_position,leaf_2_height_from_ground,leaf_3_position,leaf_3_height_from_ground
+ Alice,top,,middle,,bottom,
+ Bob,0,1.0,5,2.0,,
+ EOS
+@@ -205,7 +205,7 @@ EOS
+ 
+   it "should allow to rename column on export" do
+     Tree.to_comma_heaven(:export => {:name => {0 => {:as => 'Name'}}, :age => {1 => {:as => 'Age'}}, :leafs => {2 => {:export => {:position => {3 => {:as => 'Position %i'}}}, :limit => 2}}}).to_csv.should == <<-EOS
+-Name,Age,Position 0,Position 1
++Name,Age,Position 1,Position 2
+ Olmo,100,top,middle
+ Ulivo,150,0,5
+ EOS
+@@ -271,7 +271,7 @@ EOS
+     pero = Tree.create(:name => 'Pero (marzo 2011)', :age => 10)
+ 
+     Tree.to_comma_heaven(:format => {:datetime => '%d/%m/%Y %H:%M'}, :export => {:name => {0 => {}}, :age => {1 => {}}, :leafs => {2 => {:export => {:position => {4 => {}}}, :limit => ''}}}).to_csv.should == <<-EOS
+-tree_name,tree_age,leaf_0_position
++tree_name,tree_age,leaf_1_position
+ Olmo,100,top
+ Ulivo,150,0
+ Pero (marzo 2011),10,
+@@ -288,7 +288,7 @@ EOS
+         :position => {5 => {:include => '1', :as => ''}}}, :limit => 3}}}
+     
+     Tree.to_comma_heaven(:export => export).to_csv.should == <<-EOS
+-tree_name,leaf_0_position,leaf_1_position,leaf_2_position,matching_o_leaf_0_position,matching_o_leaf_1_position,matching_o_leaf_2_position
++tree_name,leaf_1_position,leaf_2_position,leaf_3_position,matching_o_leaf_1_position,matching_o_leaf_2_position,matching_o_leaf_3_position
+ Olmo,top,middle,bottom,top,,bottom
+ Ulivo,0,5,,,,
+ EOS
+diff --git a/spec/sqler/columns_spec.rb b/spec/sqler/columns_spec.rb
+index 21d4e95..9abc42c 100644
+--- a/spec/sqler/columns_spec.rb
++++ b/spec/sqler/columns_spec.rb
+@@ -146,7 +146,7 @@ describe "Columns" do
+    
+   it "should build correct SQL select and joins clauses exporting has many association" do
+     columns = CommaHeaven::Sqler::Columns.new(Tree, {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '1', :as => ''}}, :leafs => {2 => {:export => {:position => {4 => {:include => '1', :as => ''}}}, :limit => '3'}}})
+-    columns.select.should == 'trees.name AS `tree_name`, trees.age AS `tree_age`, _leafs_0.position AS `leaf_0_position`, _leafs_1.position AS `leaf_1_position`, _leafs_2.position AS `leaf_2_position`'
++    columns.select.should == 'trees.name AS `tree_name`, trees.age AS `tree_age`, _leafs_1.position AS `leaf_1_position`, _leafs_2.position AS `leaf_2_position`, _leafs_3.position AS `leaf_3_position`'
+     columns.joins.should  =~ /LEFT JOIN/
+   end
+   
+@@ -159,7 +159,7 @@ describe "Columns" do
+   
+   it "should build corrent SQL select and joins clauses for deeper associations" do
+     columns = CommaHeaven::Sqler::Columns.new(Gardener, {:name => {0 => {:include => '1', :as => ''}}, :trees => {1 => {:export => {:name => {0 => {:include => '1', :as => ''}}, :age => {1 => {:include => '1', :as => ''}}, :gardener => {2 => {:export => {:surname => {4 => {:include => '1', :as => ''}}}}}}, :limit => 3}}})
+-    columns.select.should == 'gardeners.name AS `gardener_name`, _trees_0.name AS `tree_0_name`, _trees_0.age AS `tree_0_age`, __trees_0_gardeners.surname AS `tree_0_gardener_surname`, _trees_1.name AS `tree_1_name`, _trees_1.age AS `tree_1_age`, __trees_1_gardeners.surname AS `tree_1_gardener_surname`, _trees_2.name AS `tree_2_name`, _trees_2.age AS `tree_2_age`, __trees_2_gardeners.surname AS `tree_2_gardener_surname`'
++    columns.select.should == 'gardeners.name AS `gardener_name`, _trees_1.name AS `tree_1_name`, _trees_1.age AS `tree_1_age`, __trees_1_gardeners.surname AS `tree_1_gardener_surname`, _trees_2.name AS `tree_2_name`, _trees_2.age AS `tree_2_age`, __trees_2_gardeners.surname AS `tree_2_gardener_surname`, _trees_3.name AS `tree_3_name`, _trees_3.age AS `tree_3_age`, __trees_3_gardeners.surname AS `tree_3_gardener_surname`'
+     columns.joins.should  =~ /LEFT JOIN/
+     columns.joins.should  =~ /_trees/
+     columns.joins.should  =~ /_gardeners/
+@@ -187,7 +187,7 @@ describe "Columns" do
+     columns.joins.should  =~ /trees/
+     columns.joins.should  =~ /gardeners/
+     columns.joins.should  =~ /leafs/
+-    columns.select.should == 'gardeners.name AS `gardener_name`, _trees_0.name AS `tree_0_name`, _trees_0.age AS `tree_0_age`, __trees_0_gardeners.surname AS `tree_0_gardener_surname`, __trees_0_leafs_0.position AS `tree_0_leaf_0_position`, __trees_0_leafs_1.position AS `tree_0_leaf_1_position`, _trees_1.name AS `tree_1_name`, _trees_1.age AS `tree_1_age`, __trees_1_gardeners.surname AS `tree_1_gardener_surname`, __trees_1_leafs_0.position AS `tree_1_leaf_0_position`, __trees_1_leafs_1.position AS `tree_1_leaf_1_position`, _trees_2.name AS `tree_2_name`, _trees_2.age AS `tree_2_age`, __trees_2_gardeners.surname AS `tree_2_gardener_surname`, __trees_2_leafs_0.position AS `tree_2_leaf_0_position`, __trees_2_leafs_1.position AS `tree_2_leaf_1_position`'
++    columns.select.should == 'gardeners.name AS `gardener_name`, _trees_1.name AS `tree_1_name`, _trees_1.age AS `tree_1_age`, __trees_1_gardeners.surname AS `tree_1_gardener_surname`, __trees_1_leafs_1.position AS `tree_1_leaf_1_position`, __trees_1_leafs_2.position AS `tree_1_leaf_2_position`, _trees_2.name AS `tree_2_name`, _trees_2.age AS `tree_2_age`, __trees_2_gardeners.surname AS `tree_2_gardener_surname`, __trees_2_leafs_1.position AS `tree_2_leaf_1_position`, __trees_2_leafs_2.position AS `tree_2_leaf_2_position`, _trees_3.name AS `tree_3_name`, _trees_3.age AS `tree_3_age`, __trees_3_gardeners.surname AS `tree_3_gardener_surname`, __trees_3_leafs_1.position AS `tree_3_leaf_1_position`, __trees_3_leafs_2.position AS `tree_3_leaf_2_position`'
+     
+     Gardener.scoped(:joins => columns.joins).count.should == 2
+     Gardener.scoped(:joins => columns.joins, :select => columns.select).first.attributes.to_a.length.should == 16
+@@ -204,12 +204,12 @@ describe "Columns" do
+     
+     columns = CommaHeaven::Sqler::Columns.new(Tree, export)
+     
+-    columns.joins.should  =~ /_leafs_0/
+     columns.joins.should  =~ /_leafs_1/
+     columns.joins.should  =~ /_leafs_2/
++    columns.joins.should  =~ /_leafs_3/
+ 
+-    columns.joins.should  =~ /_matching_o_leafs_0/
+     columns.joins.should  =~ /_matching_o_leafs_1/
+     columns.joins.should  =~ /_matching_o_leafs_2/
++    columns.joins.should  =~ /_matching_o_leafs_3/
+   end
+ end
+diff --git a/spec/sqler/has_many_columns_spec.rb b/spec/sqler/has_many_columns_spec.rb
+index aa72ec0..8326146 100644
+--- a/spec/sqler/has_many_columns_spec.rb
++++ b/spec/sqler/has_many_columns_spec.rb
+@@ -8,20 +8,20 @@ describe "HasManyColumns" do
+   
+   it "should build correct SQL select clause" do
+     column = CommaHeaven::Sqler::HasManyColumns.new(@association, {:position => {4 => {:include => '1', :as => ''}}}, 1, @tree, 1, :limit => '3')
+-    column.select.should == '_leafs_1.position AS `leaf_1_position`'
++    column.select.should == '_leafs_2.position AS `leaf_2_position`'
+   end
+ 
+   it "should build correct SQL select clause for multiple fields" do
+     column = CommaHeaven::Sqler::HasManyColumns.new(@association, {:position => {4 => {:include => '1', :as => ''}}, :size => {5 => {:include => '1', :as => ''}}}, 1, @tree, 1, :limit => '3')
+-    column.select.should == '_leafs_1.position AS `leaf_1_position`, _leafs_1.size AS `leaf_1_size`'
++    column.select.should == '_leafs_2.position AS `leaf_2_position`, _leafs_2.size AS `leaf_2_size`'
+   end
+   
+   it "should build correct SQL joins clause" do
+     column = CommaHeaven::Sqler::HasManyColumns.new(@association, {:position => {4 => {:include => '1', :as => ''}}}, 1, @tree, 1, :limit => '3')
+     column.joins.should == <<-EOS.gsub(/\n/, ' ').squeeze(' ').strip
+-LEFT JOIN `leaves` AS _leafs_1
+-  ON trees.id = _leafs_1.tree_id
+-  AND _leafs_1.id = (SELECT id FROM `leaves` WHERE tree_id = trees.id LIMIT 1, 1)
++LEFT JOIN `leaves` AS _leafs_2
++  ON trees.id = _leafs_2.tree_id
++  AND _leafs_2.id = (SELECT id FROM `leaves` WHERE tree_id = trees.id LIMIT 1, 1)
+ EOS
+   end
+ 
+@@ -32,11 +32,11 @@ EOS
+                                                               :height_from_ground => {1 => {}} } } } })
+     column = CommaHeaven::Sqler::HasManyColumns.new(Gardener.reflect_on_association(:leafs), {:position => {4 => {:include => '1', :as => ''}}}, 1, @gardener, 0, :limit => '3')
+     column.joins.should == <<-EOS.gsub(/\n/, ' ').squeeze(' ').strip
+-LEFT JOIN trees AS _trees_leafs_0 
+-  ON gardeners.id = _trees_leafs_0.gardener_id 
+-LEFT JOIN `leaves` AS _leafs_0 
+-  ON _trees_leafs_0.id = _leafs_0.tree_id 
+-  AND _leafs_0.id = 
++LEFT JOIN trees AS _trees_leafs_1 
++  ON gardeners.id = _trees_leafs_1.gardener_id 
++LEFT JOIN `leaves` AS _leafs_1 
++  ON _trees_leafs_1.id = _leafs_1.tree_id 
++  AND _leafs_1.id = 
+     ( SELECT `leaves`.id 
+       FROM `leaves` 
+       JOIN trees ON `leaves`.tree_id = trees.id 
+-- 
+1.7.9.5
+
