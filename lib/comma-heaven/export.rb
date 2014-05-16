@@ -42,6 +42,7 @@ module CommaHeaven
       
       self.export.symbolize_keys!
       
+      self.by = self.options[:by]
       self.limit = self.options[:limit]
     end
     
